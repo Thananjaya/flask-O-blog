@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, flash, redirect
 from forms import UserRegistrationForm, UserSignInForm
 app = Flask(__name__)
 
+# nothing but the secret key to encrypt the cookies
 app.config['SECRET_KEY'] = 'abb9614f40e5f6521adb623714cdfc9e'
 
 posts = [
