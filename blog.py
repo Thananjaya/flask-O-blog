@@ -1,9 +1,37 @@
+from datetime import datetime
 from flask import Flask, render_template, url_for, flash, redirect
+from flask_sqlalchemy import SQLAlchemy
 from forms import UserRegistrationForm, UserSignInForm
-app = Flask(__name__)
+
 
 # nothing but the secret key to encrypt the cookies
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'abb9614f40e5f6521adb623714cdfc9e'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    image_file = db.Column(db.String(20), nullable=False, default="default_image.jpg") 
+    password = db.Column(db.String(50), nullable=False)
+    posts = db.relationship('Post', backref='created_by', lazy=True)
+
+    def __repr__(self):
+        return f"User({self.username} {self.email} {self.image_file})"
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key= True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(150), nullable=False)
+    information = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"Post({self.title}, {self.information}, {self.created_at})"
+
 
 posts = [
     {
