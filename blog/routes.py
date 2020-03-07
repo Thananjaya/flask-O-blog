@@ -1,5 +1,5 @@
 from blog import app, db, bcrypt
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
 from blog.forms import UserRegistrationForm, UserSignInForm
 from blog.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
@@ -49,7 +49,8 @@ def signin():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('home'))
+            redirect_page = request.args.get('next')
+            return redirect(redirect_page) if redirect_page else redirect(url_for('home'))
         flash('Either your Email or Password is wrong!!', 'danger')
     return render_template('signin.html', title='Sign In', form=form)
 
