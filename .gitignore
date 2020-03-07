@@ -1,0 +1,4 @@
+#ignoring pycache
+blog/__pycache__
+*.pvc
+*.pvo

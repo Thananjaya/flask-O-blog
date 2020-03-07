@@ -1,4 +1,4 @@
-from blog import app
+from blog import app, db, bcrypt
 from flask import render_template, url_for, flash, redirect
 from blog.forms import UserRegistrationForm, UserSignInForm
 from blog.models import User, Post
@@ -27,8 +27,12 @@ def home():
 def register():
     form = UserRegistrationForm()
     if form.validate_on_submit():
+        hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username = form.username.data, email=form.email.data, password=hashed_pwd)
+        db.session.add(user)
+        db.session.commit()
         flash(f'Account created for {form.username.data}', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('signin'))
     return render_template('registration.html', title='Sign Up', form=form)
 
 @app.route('/signin')
